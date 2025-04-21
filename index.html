@@ -151,7 +151,7 @@
       return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center text-center p-4">
           <img
-            src="/img/cafe-hero.jpg"
+            src="img/cafe-hero.jpg"
             alt="Qainjurt Cafe"
             className="w-full max-w-3xl h-64 object-cover rounded-lg mb-6"
           />
@@ -165,9 +165,9 @@
     function Menu({ lang }) {
       const t = translations[lang];
       const menuItems = [
-        { name: "Бауырсақ", price: "500 KZT", image: "/img/baursak.jpg" },
-        { name: "Қымыз", price: "800 KZT", image: "/img/kymyz.jpg" },
-        { name: "Бешбармақ", price: "2000 KZT", image: "/img/beshbarmak.jpg" },
+        { name: "Бауырсақ", price: "500 KZT", image: "img/baursak.jpg" },
+        { name: "Қымыз", price: "800 KZT", image: "img/kymyz.jpg" },
+        { name: "Бешбармақ", price: "2000 KZT", image: "img/beshbarmak.jpg" },
       ];
       return (
         <div className="min-h-screen bg-gray-100 p-8">
@@ -206,7 +206,7 @@
           try {
             await navigator.share({
               text: message,
-              url: 'https://wa.me/1234567890' // WhatsApp нөмірін өзгертіңіз
+              url: 'https://wa.me/+77478486430' //
             });
             alert(t.orderSent);
           } catch (error) {
@@ -220,7 +220,7 @@
         } else {
           // Share API қолжетімсіз болса, әдеттегі сілтеме
           const encodedMessage = encodeURIComponent(message);
-          const url = `https://wa.me/1234567890?text=${encodedMessage}`;
+          const url = `https://wa.me/+77478486430?text=${encodedMessage}`;
           window.location.href = url;
           alert(t.orderSent);
         }
@@ -268,7 +268,7 @@
             </select>
             {payment === 'kaspi' && (
               <img
-                src="/img/kaspi-qr.png"
+                src="img/kaspi-qr.png"
                 alt="Kaspi QR"
                 className="w-32 h-32 mx-auto mb-4"
               />
@@ -302,7 +302,7 @@
           <h1 className="text-3xl font-bold text-green-600 mb-6">{t.galleryTitle}</h1>
           <input
             type="file"
-            accept="image/*"
+            accept="img/*"
             onChange={handlePhotoUpload}
             className="mb-4"
           />
