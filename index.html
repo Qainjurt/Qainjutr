@@ -197,7 +197,7 @@
       const handleSubmit = () => {
         const message = `${t.orderDetails}:\n${t.name}: ${name}\n${t.address}: ${address}\n${t.phone}: ${phone}\n${t.payment}: ${payment}`;
         const encodedMessage = encodeURIComponent(message);
-        const url = `https://wa.me/1234567890?text=${encodedMessage}`; // WhatsApp нөмірін өзгертіңіз
+        const url = `https://wa.me/+77478486430?text=${encodedMessage}`; // WhatsApp нөмірін өзгертіңіз
         window.open(url, '_blank');
         alert(t.orderSent);
       };
