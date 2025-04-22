@@ -137,9 +137,9 @@
 
     // Күйлердің тізімі
     const kuiList = [
-      { name: "Сарыарқа", src: "/audio/kui1.mp3" },
-      { name: "Көңіл ашар", src: "/audio/kui2.mp3" },
-      { name: "Балбырауын", src: "/audio/kui3.mp3" },
+      { name: "Сарыарқа", src: "audio/kui1.mp3" },
+      { name: "Көңіл ашар", src: "audio/kui2.mp3" },
+      { name: "Балбырауын", src: "audio/kui3.mp3" },
     ];
 
     // Аудио ойнатқыш компоненті
@@ -237,7 +237,7 @@
       return (
         <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center text-center p-4">
           <img
-            src="/img/cafe-hero.jpg"
+            src="img/cafe-hero.jpg"
             alt="Qainjurt Cafe"
             className="w-full max-w-3xl h-64 object-cover rounded-lg mb-6"
           />
@@ -251,9 +251,9 @@
     function Menu({ lang }) {
       const t = translations[lang];
       const menuItems = [
-        { name: "Бауырсақ", price: "500 KZT", image: "/img/baursak.jpg" },
-        { name: "Қымыз", price: "800 KZT", image: "/img/kymyz.jpg" },
-        { name: "Бешбармақ", price: "2000 KZT", image: "/img/beshbarmak.jpg" },
+        { name: "Бауырсақ", price: "500 KZT", image: "img/baursak.jpg" },
+        { name: "Қымыз", price: "800 KZT", image: "img/kymyz.jpg" },
+        { name: "Бешбармақ", price: "2000 KZT", image: "img/beshbarmak.jpg" },
       ];
       return (
         <div className="min-h-screen bg-gray-100 p-8">
@@ -351,7 +351,7 @@
             </select>
             {payment === 'kaspi' && (
               <img
-                src="/img/kaspi-qr.png"
+                src="img/kaspi-qr.png"
                 alt="Kaspi QR"
                 className="w-32 h-32 mx-auto mb-4"
               />
@@ -385,7 +385,7 @@
           <h1 className="text-3xl font-bold text-green-600 mb-6">{t.galleryTitle}</h1>
           <input
             type="file"
-            accept="image/*"
+            accept="img/*"
             onChange={handlePhotoUpload}
             className="mb-4"
           />
