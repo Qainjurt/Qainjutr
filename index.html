@@ -1,0 +1,427 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qainjurt Cafe</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // Тілдердің аудармалары
+    const translations = {
+      kk: {
+        home: "Басты бет",
+        menu: "Мәзір",
+        order: "Тапсырыс беру",
+        gallery: "Галерея",
+        welcome: "Qainjurt Кафесіне қош келдіңіз!",
+        menuTitle: "Біздің мәзір",
+        orderTitle: "Тапсырыс беру",
+        name: "Аты-жөніңіз",
+        address: "Мекен-жайыңыз",
+        phone: "Телефон нөміріңіз",
+        items: "Қандай сет немесе не керек",
+        payment: "Төлем әдісі",
+        cash: "Қолма-қол",
+        kaspi: "Kaspi",
+        submit: "Тапсырыс жіберу",
+        galleryTitle: "Галерея",
+        uploadPhoto: "Фото жүктеу",
+        orderDetails: "Тапсырыс мәліметтері",
+        orderSent: "Тапсырыс сәтті жіберілді!",
+        play: "Ойнату",
+        pause: "Тоқтату",
+        next: "Келесі күй",
+        previous: "Алдыңғы күй",
+        nowPlaying: "Қазір ойналуда",
+      },
+      ru: {
+        home: "Главная",
+        menu: "Меню",
+        order: "Заказать",
+        gallery: "Галерея",
+        welcome: "Добро пожаловать в кафе Qainjurt!",
+        menuTitle: "Наше меню",
+        orderTitle: "Оформление заказа",
+        name: "Ваше имя",
+        address: "Ваш адрес",
+        phone: "Ваш номер телефона",
+        items: "Какой сет или что нужно",
+        payment: "Способ оплаты",
+        cash: "Наличные",
+        kaspi: "Kaspi",
+        submit: "Отправить заказ",
+        galleryTitle: "Галерея",
+        uploadPhoto: "Загрузить фото",
+        orderDetails: "Детали заказа",
+        orderSent: "Заказ успешно отправлен!",
+        play: "Воспроизвести",
+        pause: "Пауза",
+        next: "Следующий кюй",
+        previous: "Предыдущий кюй",
+        nowPlaying: "Сейчас играет",
+      },
+      en: {
+        home: "Home",
+        menu: "Menu",
+        order: "Order",
+        gallery: "Gallery",
+        welcome: "Welcome to Qainjurt Cafe!",
+        menuTitle: "Our Menu",
+        orderTitle: "Place an Order",
+        name: "Your Name",
+        address: "Your Address",
+        phone: "Your Phone Number",
+        items: "Which set or what is needed",
+        payment: "Payment Method",
+        cash: "Cash",
+        kaspi: "Kaspi",
+        submit: "Submit Order",
+        galleryTitle: "Gallery",
+        uploadPhoto: "Upload Photo",
+        orderDetails: "Order Details",
+        orderSent: "Order successfully sent!",
+        play: "Play",
+        pause: "Pause",
+        next: "Next Kui",
+        previous: "Previous Kui",
+        nowPlaying: "Now Playing",
+      },
+    };
+
+    // Күйлердің тізімі
+    const kuiList = [
+      { name: "Сарыарқа", src: "/audio/kui1.mp3" },
+      { name: "Көңіл ашар", src: "/audio/kui2.mp3" },
+      { name: "Балбырауын", src: "/audio/kui3.mp3" },
+    ];
+
+    // Аудио ойнатқыш компоненті
+    function AudioPlayer({ lang }) {
+      const t = translations[lang];
+      const [currentKuiIndex, setCurrentKuiIndex] = useState(0);
+      const [isPlaying, setIsPlaying] = useState(false);
+      const audioRef = useRef(new Audio(kuiList[currentKuiIndex].src));
+
+      useEffect(() => {
+        const audio = audioRef.current;
+        audio.src = kuiList[currentKuiIndex].src;
+        if (isPlaying) {
+          audio.play();
+        }
+        return () => {
+          audio.pause();
+        };
+      }, [currentKuiIndex]);
+
+      const togglePlay = () => {
+        if (isPlaying) {
+          audioRef.current.pause();
+        } else {
+          audioRef.current.play();
+        }
+        setIsPlaying(!isPlaying);
+      };
+
+      const playNext = () => {
+        setCurrentKuiIndex((prevIndex) => (prevIndex + 1) % kuiList.length);
+        setIsPlaying(true);
+      };
+
+      const playPrevious = () => {
+        setCurrentKuiIndex((prevIndex) => (prevIndex - 1 + kuiList.length) % kuiList.length);
+        setIsPlaying(true);
+      };
+
+      return (
+        <div className="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg flex items-center space-x-4">
+          <div className="text-sm">
+            {t.nowPlaying}: {kuiList[currentKuiIndex].name}
+          </div>
+          <button
+            onClick={playPrevious}
+            className="bg-green-600 text-white p-2 rounded hover:bg-green-700"
+          >
+            {t.previous}
+          </button>
+          <button
+            onClick={togglePlay}
+            className="bg-green-600 text-white p-2 rounded hover:bg-green-700"
+          >
+            {isPlaying ? t.pause : t.play}
+          </button>
+          <button
+            onClick={playNext}
+            className="bg-green-600 text-white p-2 rounded hover:bg-green-700"
+          >
+            {t.next}
+          </button>
+        </div>
+      );
+    }
+
+    // Навигация компоненті
+    function Navbar({ lang, setLang, setPage }) {
+      const t = translations[lang];
+      return (
+        <nav className="bg-green-600 text-white p-4 flex justify-between items-center">
+          <div className="text-xl font-bold">Qainjurt Cafe</div>
+          <div className="space-x-4">
+            <button onClick={() => setPage('home')} className="hover:underline">{t.home}</button>
+            <button onClick={() => setPage('menu')} className="hover:underline">{t.menu}</button>
+            <button onClick={() => setPage('order')} className="hover:underline">{t.order}</button>
+            <button onClick={() => setPage('gallery')} className="hover:underline">{t.gallery}</button>
+            <select
+              value={lang}
+              onChange={(e) => setLang(e.target.value)}
+              className="bg-green-700 p-1 rounded text-white"
+            >
+              <option value="kk">Қазақша</option>
+              <option value="ru">Русский</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </nav>
+      );
+    }
+
+    // Басты бет компоненті
+    function Home({ lang }) {
+      const t = translations[lang];
+      return (
+        <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center text-center p-4">
+          <img
+            src="/img/cafe-hero.jpg"
+            alt="Qainjurt Cafe"
+            className="w-full max-w-3xl h-64 object-cover rounded-lg mb-6"
+          />
+          <h1 className="text-4xl font-bold text-green-600 mb-4">{t.welcome}</h1>
+          <p className="text-lg text-gray-700">Дәмді тағамдар мен жайлы атмосфераны ұсынамыз!</p>
+        </div>
+      );
+    }
+
+    // Мәзір компоненті
+    function Menu({ lang }) {
+      const t = translations[lang];
+      const menuItems = [
+        { name: "Бауырсақ", price: "500 KZT", image: "/img/baursak.jpg" },
+        { name: "Қымыз", price: "800 KZT", image: "/img/kymyz.jpg" },
+        { name: "Бешбармақ", price: "2000 KZT", image: "/img/beshbarmak.jpg" },
+      ];
+      return (
+        <div className="min-h-screen bg-gray-100 p-8">
+          <h1 className="text-3xl font-bold text-green-600 mb-6">{t.menuTitle}</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {menuItems.map((item, index) => (
+              <div key={index} className="bg-white p-4 rounded-lg shadow-md">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-48 object-cover rounded-lg mb-4"
+                />
+                <h2 className="text-xl font-semibold">{item.name}</h2>
+                <p className="text-gray-600">{item.price}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Тапсырыс беру компоненті
+    function Order({ lang }) {
+      const t = translations[lang];
+      const [name, setName] = useState('');
+      const [address, setAddress] = useState('');
+      const [phone, setPhone] = useState('');
+      const [items, setItems] = useState('');
+      const [payment, setPayment] = useState('cash');
+
+      const handleSubmit = async () => {
+        const message = `${t.orderDetails}:\n${t.name}: ${name}\n${t.address}: ${address}\n${t.phone}: ${phone}\n${t.items}: ${items}\n${t.payment}: ${payment}`;
+        
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              text: message,
+              url: 'https://wa.me/1234567890' // WhatsApp нөмірін өзгертіңіз
+            });
+            alert(t.orderSent);
+          } catch (error) {
+            console.error('Share API қатесі:', error);
+            const encodedMessage = encodeURIComponent(message);
+            const url = `https://wa.me/1234567890?text=${encodedMessage}`;
+            window.location.href = url;
+            alert(t.orderSent);
+          }
+        } else {
+          const encodedMessage = encodeURIComponent(message);
+          const url = `https://wa.me/1234567890?text=${encodedMessage}`;
+          window.location.href = url;
+          alert(t.orderSent);
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-100 p-8 flex justify-center">
+          <div className="max-w-md w-full">
+            <h1 className="text-3xl font-bold text-green-600 mb-6">{t.orderTitle}</h1>
+            <input
+              type="text"
+              placeholder={t.name}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-2 mb-4 border rounded"
+            />
+            <input
+              type="text"
+              placeholder={t.address}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full p-2 mb-4 border rounded"
+            />
+            <input
+              type="tel"
+              placeholder={t.phone}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full p-2 mb-4 border rounded"
+            />
+            <input
+              type="text"
+              placeholder={t.items}
+              value={items}
+              onChange={(e) => setItems(e.target.value)}
+              className="w-full p-2 mb-4 border rounded"
+            />
+            <select
+              value={payment}
+              onChange={(e) => setPayment(e.target.value)}
+              className="w-full p-2 mb-4 border rounded"
+            >
+              <option value="cash">{t.cash}</option>
+              <option value="kaspi">{t.kaspi}</option>
+            </select>
+            {payment === 'kaspi' && (
+              <img
+                src="/img/kaspi-qr.png"
+                alt="Kaspi QR"
+                className="w-32 h-32 mx-auto mb-4"
+              />
+            )}
+            <button
+              onClick={handleSubmit}
+              className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
+            >
+              {t.submit}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    // Галерея компоненті
+    function Gallery({ lang }) {
+      const t = translations[lang];
+      const [photos, setPhotos] = useState([]);
+
+      const handlePhotoUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const photoUrl = URL.createObjectURL(file);
+          setPhotos([...photos, photoUrl]);
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-100 p-8">
+          <h1 className="text-3xl font-bold text-green-600 mb-6">{t.galleryTitle}</h1>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+            className="mb-4"
+          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {photos.map((photo, index) => (
+              <img
+                key={index}
+                src={photo}
+                alt="Gallery"
+                className="w-full h-48 object-cover rounded"
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // Негізгі компонент
+    function App() {
+      const [lang, setLang] = useState('kk');
+      const [page, setPage] = useState('home');
+
+      return (
+        <div>
+          <Navbar lang={lang} setLang={setLang} setPage={setPage} />
+          {page === 'home' && <Home lang={lang} />}
+          {page === 'menu' && <Menu lang={lang} />}
+          {page === 'order' && <Order lang={lang} />}
+          {page === 'gallery' && <Gallery lang={lang} />}
+          <AudioPlayer lang={lang} />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
