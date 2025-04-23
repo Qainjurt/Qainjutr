@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Qainjurt Cafe</title>
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const translations = {
+      kk: {
+        home: "Басты бет", menu: "Мәзір", order: "Тапсырыс беру", game: "Ойын", gallery: "Галерея",
+        payment: "Төлем", welcome: "Qainjurt Кафесіне қош келдіңіз!", menuTitle: "Біздің мәзір",
+        orderTitle: "Тапсырыс беру", name: "Аты-жөніңіз", address: "Мекен-жайыңыз", phone: "Телефон нөміріңіз",
+        items: "Қандай сет немесе не керек", paymentMethod: "Төлем әдісі", cash: "Қолма-қол", kaspi: "Kaspi",
+        submit: "Тапсырыс жіберу", galleryTitle: "Галерея", orderDetails: "Тапсырыс мәліметтері",
+        orderSent: "Тапсырыс сәтті жіберілді!", play: "Ойнату", pause: "Тоқтату", next: "Келесі күй",
+        previous: "Алдыңғы күй", nowPlaying: "Қазір ойналуда", gameTitle: "Балық аулау ойыны",
+        catchFish: "Балық аулау", points: "Ұпайлар", redeemFood: "Тамаққа айырбастау", dailyBonus: "Күнделікті бонус",
+        purchaseBonus: "Сатып алу бонусы", phoneRequired: "Телефон нөмірін енгізіңіз", invalidPhone: "Жарамды телефон нөмірі қажет!",
+        welcomeBonus: "Қош келдіңіз бонусы: 500 ұпай!", paymentTitle: "Төлем ақпараты",
+        paymentInfo: "Төлемді Kaspi арқылы немесе қолма-қол жасай аласыз.", alreadyClaimed: "Бүгін бонус алдыңыз!"
+      },
+      ru: {
+        home: "Главная", menu: "Меню", order: "Заказать", game: "Игра", gallery: "Галерея",
+        payment: "Оплата", welcome: "Добро пожаловать в кафе Qainjurt!", menuTitle: "Наше меню",
+        orderTitle: "Оформление заказа", name: "Ваше имя", address: "Ваш адрес", phone: "Ваш номер телефона",
+        items: "Какой сет или что нужно", paymentMethod: "Способ оплаты", cash: "Наличные", kaspi: "Kaspi",
+        submit: "Отправить заказ", galleryTitle: "Галерея", orderDetails: "Детали заказа",
+        orderSent: "Заказ успешно отправлен!", play: "Воспроизвести", pause: "Пауза", next: "Следующий кюй",
+        previous: "Предыдущий кюй", nowPlaying: "Сейчас играет", gameTitle: "Игра в рыбалку",
+        catchFish: "Поймать рыбу", points: "Очки", redeemFood: "Обменять на еду", dailyBonus: "Ежедневный бонус",
+        purchaseBonus: "Бонус за покупку", phoneRequired: "Введите номер телефона", invalidPhone: "Требуется действительный номер телефона!",
+        welcomeBonus: "Приветственный бонус: 500 очков!", paymentTitle: "Информация об оплате",
+        paymentInfo: "Оплату можно произвести через Kaspi или наличными.", alreadyClaimed: "Сегодня вы уже получили бонус!"
+      },
+      en: {
+        home: "Home", menu: "Menu", order: "Order", game: "Game", gallery: "Gallery",
+        payment: "Payment", welcome: "Welcome to Qainjurt Cafe!", menuTitle: "Our Menu",
+        orderTitle: "Place an Order", name: "Your Name", address: "Your Address", phone: "Your Phone Number",
+        items: "Which set or what is needed", paymentMethod: "Payment Method", cash: "Cash", kaspi: "Kaspi",
+        submit: "Submit Order", galleryTitle: "Gallery", orderDetails: "Order Details",
+        orderSent: "Order successfully sent!", play: "Play", pause: "Pause", next: "Next Kui",
+        previous: "Previous Kui", nowPlaying: "Now Playing", gameTitle: "Fishing Game",
+        catchFish: "Catch Fish", points: "Points", redeemFood: "Redeem for Food", dailyBonus: "Daily Bonus",
+        purchaseBonus: "Purchase Bonus", phoneRequired: "Enter your phone number", invalidPhone: "A valid phone number is required!",
+        welcomeBonus: "Welcome Bonus: 500 points!", paymentTitle: "Payment Information",
+        paymentInfo: "Payment can be made via Kaspi or cash.", alreadyClaimed: "You have already claimed today's bonus!"
+      }
+    };
+
+    const kuiList = [
+      { name: "Сарыарқа", src: "/audio/kui1.mp3" },
+      { name: "Көңіл ашар", src: "/audio/kui2.mp3" },
+      { name: "Балбырауын", src: "/audio/kui3.mp3" }
+    ];
+
+    function Sidebar({ lang, setLang, setPage }) {
+      const t = translations[lang];
+      const [isOpen, setIsOpen] = useState(false);
+
+      return (
+        <div>
+          <button
+            onClick={() => setIsOpen(!isOpen)}
+            className="fixed top-4 left-4 z-50 bg-green-600 text-white p-2 rounded"
+          >
+            ☰
+          </button>
+          <div
+            className={`fixed top-0 left-0 h-full bg-green-700 text-white w-64 transform ${
+              isOpen ? 'translate-x-0' : '-translate-x-full'
+            } transition-transform duration-300 z-40`}
+          >
+            <div className="p-4">
+              <h2 className="text-xl font-bold mb-4">Qainjurt Cafe</h2>
+              <button onClick={() => setPage('home')} className="block py-2 hover:underline">{t.home}</button>
+              <button onClick={() => setPage('menu')} className="block py-2 hover:underline">{t.menu}</button>
+              <button onClick={() => setPage('order')} className="block py-2 hover:underline">{t.order}</button>
+              <button onClick={() => setPage('game')} className="block py-2 hover:underline">{t.game}</button>
+              <button onClick={() => setPage('gallery')} className="block py-2 hover:underline">{t.gallery}</button>
+              <button onClick={() => setPage('payment')} className="block py-2 hover:underline">{t.payment}</button>
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value)}
+                className="mt-4 bg-green-800 p-2 rounded text-white w-full"
+              >
+                <option value="kk">Қазақша</option>
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+              </select>
+            </div>
+          </div>
+          {isOpen && (
+            <div
+              className="fixed inset-0 bg-black opacity-50 z-30"
+              onClick={() => setIsOpen(false)}
+            ></div>
+          )}
+        </div>
+      );
+    }
+
+    function AudioPlayer({ lang }) {
+      const t = translations[lang];
+      const [currentKuiIndex, setCurrentKuiIndex] = useState(0);
+      const [isPlaying, setIsPlaying] = useState(false);
+      const audioRef = useRef(new Audio(kuiList[currentKuiIndex].src));
+
+      useEffect(() => {
+        const audio = audioRef.current;
+        audio.src = kuiList[currentKuiIndex].src;
+        if (isPlaying) {
+          audio.play();
+        }
+        return () => {
+          audio.pause();
+        };
+      }, [currentKuiIndex]);
+
+      const togglePlay = () => {
+        if (isPlaying) {
+          audioRef.current.pause();
+        } else {
+          audioRef.current.play();
+        }
+        setIsPlaying(!isPlaying);
+      };
+
+      const playNext = () => {
+        setCurrentKuiIndex((prevIndex) => (prevIndex + 1) % kuiList.length);
+        setIsPlaying(true);
+      };
+
+      const playPrevious = () => {
+        setCurrentKuiIndex((prevIndex) => (prevIndex - 1 + kuiList.length) % kuiList.length);
+        setIsPlaying(true);
+      };
+
+      return (
+        <div className="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg flex items-center space-x-4">
+          <div className="text-sm">
+            {t.nowPlaying}: {kuiList[currentKuiIndex].name}
+          </div>
+          <button
+            onClick={playPrevious}
+            className="bg-green-600 text-white p-2 rounded hover:bg-green-700"
+          >
+            {t.previous}
+          </button>
+          <button
+            onClick={togglePlay}
+            className="bg-green-600 text-white p-2 rounded hover:bg-green-700"
+          >
+            {isPlaying ? t.pause : t.play}
+          </button>
+          <button
+            onClick={playNext}
+            className="bg-green-600 text-white p-2 rounded hover:bg-green-700"
+          >
+            {t.next}
+          </button>
+        </div>
+      );
+    }
+
+    function Home({ lang }) {
+      const t = translations[lang];
+      return (
+        <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center text-center p-4">
+          <img
+            src="/img/cafe-hero.jpg"
+            alt="Qainjurt Cafe"
+            className="w-full max-w-3xl h-64 object-cover rounded-lg mb-6"
+          />
+          <h1 className="text-4xl font-bold text-green-600 mb-4">{t.welcome}</h1>
+          <p className="text-lg text-gray-700">Дәмді тағамдар мен жайлы атмосфераны ұсынамыз!</p>
+        </div>
+      );
+    }
+
+    function Menu({ lang }) {
+      const t = translations[lang];
+      const menuItems = [
+        { name: "Бауырсақ", price: "500 KZT", image: "/img/baursak.jpg" },
+        { name: "Қымыз", price: "800 KZT", image: "/img/kymyz.jpg" },
+        { name: "Бешбармақ", price: "2000 KZT", image: "/img/beshbarmak.jpg" }
+      ];
+      return (
+        <div className="min-h-screen bg-gray-100 p-8">
+          <h1 className="text-3xl font-bold text-green-600 mb-6">{t.menuTitle}</h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {menuItems.map((item, index) => (
+              <div key={index} className="bg-white p-4 rounded-lg shadow-md">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-48 object-cover rounded-lg mb-4"
+                />
+                <h2 className="text-xl font-semibold">{item.name}</h2>
+                <p className="text-gray-600">{item.price}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function Order({ lang, addPoints }) {
+      const t = translations[lang];
+      const [name, setName] = useState('');
+      const [address, setAddress] = useState('');
+      const [phone, setPhone] = useState('');
+      const [items, setItems] = useState('');
+      const [payment, setPayment] = useState('cash');
+
+      const handleSubmit = async () => {
+        const message = `${t.orderDetails}:\n${t.name}: ${name}\n${t.address}: ${address}\n${t.phone}: ${phone}\n${t.items}: ${items}\n${t.paymentMethod}: ${payment}`;
+        
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              text: message,
+              url: 'https://wa.me/1234567890'
+            });
+            if (phone) {
+              addPoints(phone, 1000);
+            }
+            alert(t.orderSent);
+          } catch (error) {
+            console.error('Share API қатесі:', error);
+            const encodedMessage = encodeURIComponent(message);
+            const url = `https://wa.me/1234567890?text=${encodedMessage}`;
+            window.location.href = url;
+            if (phone) {
+              addPoints(phone, 1000);
+            }
+            alert(t.orderSent);
+          }
+        } else {
+          const encodedMessage = encodeURIComponent(message);
+          const url = `https://wa.me/1234567890?text=${encodedMessage}`;
+          window.location.href = url;
+          if (phone) {
+            addPoints(phone, 1000);
+          }
+          alert(t.orderSent);
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-100 p-8 flex justify-center">
+          <div className="max-w-md w-full">
+            <h1 className="text-3xl font-bold text-green-600 mb-6">{t.orderTitle}</h1>
+            <input
+              type="text"
+              placeholder={t.name}
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full p-2 mb-4 border rounded"
+            />
+            <input
+              type="text"
+              placeholder={t.address}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              className="w-full p-2 mb-4 border rounded"
+            />
+            <input
+              type="tel"
+              placeholder={t.phone}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full p-2 mb-4 border rounded"
+            />
+            <input
+              type="text"
+              placeholder={t.items}
+              value={items}
+              onChange={(e) => setItems(e.target.value)}
+              className="w-full p-2 mb-4 border rounded"
+            />
+            <select
+              value={payment}
+              onChange={(e) => setPayment(e.target.value)}
+              className="w-full p-2 mb-4 border rounded"
+            >
+              <option value="cash">{t.cash}</option>
+              <option value="kaspi">{t.kaspi}</option>
+            </select>
+            {payment === 'kaspi' && (
+              <img
+                src="/img/kaspi-qr.png"
+                alt="Kaspi QR"
+                className="w-32 h-32 mx-auto mb-4"
+              />
+            )}
+            <button
+              onClick={handleSubmit}
+              className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
+            >
+              {t.submit}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    function Game({ lang, setPage }) {
+      const t = translations[lang];
+      const [phone, setPhone] = useState('');
+      const [user, setUser] = useState(null);
+
+      const isSameDay = (timestamp) => {
+        if (!timestamp) return false;
+        const lastDate = timestamp.toDate();
+        const today = new Date();
+        return (
+          lastDate.getDate() === today.getDate() &&
+          lastDate.getMonth() === today.getMonth() &&
+          lastDate.getFullYear() === today.getFullYear()
+        );
+      };
+
+      const handlePhoneSubmit = async () => {
+        const phoneRegex = /^\+?[1-9]\d{1,14}$/;
+        if (!phoneRegex.test(phone)) {
+          alert(t.invalidPhone);
+          return;
+        }
+        try {
+          const userDoc = await db.collection('users').doc(phone).get();
+          if (userDoc.exists) {
+            const userData = userDoc.data();
+            setUser({ phone, points: userData.points });
+          } else {
+            await db.collection('users').doc(phone).set({
+              points: 500,
+              lastFishCatch: null,
+              lastDailyBonus: null,
+              lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            setUser({ phone, points: 500 });
+            alert(t.welcomeBonus);
+          }
+        } catch (error) {
+          alert('Қате: ' + error.message);
+        }
+      };
+
+      const addPoints = async (phone, points) => {
+        try {
+          const userDoc = await db.collection('users').doc(phone).get();
+          const userData = userDoc.data();
+          const newPoints = (userData.points || 0) + points;
+          await db.collection('users').doc(phone).update({
+            points: newPoints,
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          setUser({ phone, points: newPoints });
+        } catch (error) {
+          console.error('Ұпай қосу қатесі:', error);
+        }
+      };
+
+      const redeemPoints = async (points) => {
+        if (user && user.points >= points) {
+          const newPoints = user.points - points;
+          await db.collection('users').doc(user.phone).update({
+            points: newPoints,
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+          });
+          setUser({ ...user, points: newPoints });
+          alert(`${t.redeemFood}: ${t.orderSent}`);
+        } else {
+          alert(`30,000 ${t.points} жинаңыз!`);
+        }
+      };
+
+      const catchFish = async () => {
+        if (!user) {
+          alert(t.phoneRequired);
+          return;
+        }
+        const userDoc = await db.collection('users').doc(user.phone).get();
+        const userData = userDoc.data();
+        if (userData.lastFishCatch && isSameDay(userData.lastFishCatch)) {
+          alert(t.alreadyClaimed);
+          return;
+        }
+        addPoints(user.phone, 500);
+        await db.collection('users').doc(user.phone).update({
+          lastFishCatch: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert(`${t.catchFish}: +500 ${t.points}`);
+      };
+
+      const claimDailyBonus = async () => {
+        if (!user) {
+          alert(t.phoneRequired);
+          return;
+        }
+        const userDoc = await db.collection('users').doc(user.phone).get();
+        const userData = userDoc.data();
+        if (userData.lastDailyBonus && isSameDay(userData.lastDailyBonus)) {
+          alert(t.alreadyClaimed);
+          return;
+        }
+        addPoints(user.phone, 100);
+        await db.collection('users').doc(user.phone).update({
+          lastDailyBonus: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        alert(`${t.dailyBonus}: +100 ${t.points}`);
+      };
+
+      const redeemFood = () => {
+        redeemPoints(30000);
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-100 p-8 text-center">
+          <h1 className="text-3xl font-bold text-green-600 mb-6">{t.gameTitle}</h1>
+          {!user ? (
+            <div className="max-w-md mx-auto">
+              <input
+                type="tel"
+                placeholder={t.phone}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className="w-full p-2 mb-4 border rounded"
+              />
+              <button
+                onClick={handlePhoneSubmit}
+                className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
+              >
+                {t.submit}
+              </button>
+            </div>
+          ) : (
+            <>
+              <p className="text-lg mb-4">{t.points}: {user.points || 0}</p>
+              <button
+                onClick={catchFish}
+                className="bg-green-600 text-white p-2 rounded hover:bg-green-700 mb-4"
+              >
+                {t.catchFish}
+              </button>
+              <button
+                onClick={claimDailyBonus}
+                className="bg-green-600 text-white p-2 rounded hover:bg-green-700 mb-4 mx-2"
+              >
+                {t.dailyBonus}
+              </button>
+              <button
+                onClick={redeemFood}
+                className="bg-green-600 text-white p-2 rounded hover:bg-green-700"
+              >
+                {t.redeemFood}
+              </button>
+            </>
+          )}
+        </div>
+      );
+    }
+
+    function Gallery({ lang }) {
+      const t = translations[lang];
+      const [photos, setPhotos] = useState([]);
+
+      useEffect(() => {
+        const fetchPhotos = async () => {
+          const photosSnapshot = await db.collection('gallery').get();
+          const photosList = photosSnapshot.docs.map(doc => doc.data().url);
+          setPhotos(photosList);
+        };
+        fetchPhotos();
+      }, []);
+
+      return (
+        <div className="min-h-screen bg-gray-100 p-8">
+          <h1 className="text-3xl font-bold text-green-600 mb-6">{t.galleryTitle}</h1>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {photos.map((photo, index) => (
+              <img
+                key={index}
+                src={photo}
+                alt="Gallery"
+                className="w-full h-48 object-cover rounded"
+              />
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function Payment({ lang }) {
+      const t = translations[lang];
+      return (
+        <div className="min-h-screen bg-gray-100 p-8 text-center">
+          <h1 className="text-3xl font-bold text-green-600 mb-6">{t.paymentTitle}</h1>
+          <p className="text-lg">{t.paymentInfo}</p>
+          <img
+            src="/img/kaspi-qr.png"
+            alt="Kaspi QR"
+            className="w-32 h-32 mx-auto mt-4"
+          />
+        </div>
+      );
+    }
+
+    function App() {
+      const [lang, setLang] = useState('kk');
+      const [page, setPage] = useState('home');
+
+      const addPoints = async (phone, points) => {
+        try {
+          const userDoc = await db.collection('users').doc(phone).get();
+          const userData = userDoc.data();
+          const newPoints = (userData.points || 0) + points;
+          await db.collection('users').doc(phone).update({
+            points: newPoints,
+            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        } catch (error) {
+          console.error('Ұпай қосу қатесі:', error);
+        }
+      };
+
+      return (
+        <div>
+          <Sidebar lang={lang} setLang={setLang} setPage={setPage} />
+          {page === 'home' && <Home lang={lang} />}
+          {page === 'menu' && <Menu lang={lang} />}
+          {page === 'order' && <Order lang={lang} addPoints={addPoints} />}
+          {page === 'game' && <Game lang={lang} setPage={setPage} />}
+          {page === 'gallery' && <Gallery lang={lang} />}
+          {page === 'payment' && <Payment lang={lang} />}
+          <AudioPlayer lang={lang} />
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
