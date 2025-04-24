@@ -8,74 +8,36 @@
   <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
 <body>
   <div id="root"></div>
   <script type="text/babel">
     const { useState, useEffect, useRef } = React;
 
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_STORAGE_BUCKET",
-      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
     const translations = {
       kk: {
-        home: "Басты бет", menu: "Мәзір", order: "Тапсырыс беру", game: "Ойын", gallery: "Галерея",
-        payment: "Төлем", welcome: "Qainjurt Кафесіне қош келдіңіз!", menuTitle: "Біздің мәзір",
-        orderTitle: "Тапсырыс беру", name: "Аты-жөніңіз", address: "Мекен-жайыңыз", phone: "Телефон нөміріңіз",
-        items: "Қандай сет немесе не керек", paymentMethod: "Төлем әдісі", cash: "Қолма-қол", kaspi: "Kaspi",
-        submit: "Тапсырыс жіберу", galleryTitle: "Галерея", orderDetails: "Тапсырыс мәліметтері",
-        orderSent: "Тапсырыс сәтті жіберілді!", play: "Ойнату", pause: "Тоқтату", next: "Келесі күй",
-        previous: "Алдыңғы күй", nowPlaying: "Қазір ойналуда", gameTitle: "Балық аулау ойыны",
-        catchFish: "Балық аулау", points: "Ұпайлар", redeemFood: "Тамаққа айырбастау", dailyBonus: "Күнделікті бонус",
-        purchaseBonus: "Сатып алу бонусы", phoneRequired: "Телефон нөмірін енгізіңіз", invalidPhone: "Жарамды телефон нөмірі қажет!",
-        welcomeBonus: "Қош келдіңіз бонусы: 500 ұпай!", paymentTitle: "Төлем ақпараты",
-        paymentInfo: "Төлемді Kaspi арқылы немесе қолма-қол жасай аласыз.", alreadyClaimed: "Бүгін бонус алдыңыз!"
-      },
-      ru: {
-        home: "Главная", menu: "Меню", order: "Заказать", game: "Игра", gallery: "Галерея",
-        payment: "Оплата", welcome: "Добро пожаловать в кафе Qainjurt!", menuTitle: "Наше меню",
-        orderTitle: "Оформление заказа", name: "Ваше имя", address: "Ваш адрес", phone: "Ваш номер телефона",
-        items: "Какой сет или что нужно", paymentMethod: "Способ оплаты", cash: "Наличные", kaspi: "Kaspi",
-        submit: "Отправить заказ", galleryTitle: "Галерея", orderDetails: "Детали заказа",
-        orderSent: "Заказ успешно отправлен!", play: "Воспроизвести", pause: "Пауза", next: "Следующий кюй",
-        previous: "Предыдущий кюй", nowPlaying: "Сейчас играет", gameTitle: "Игра в рыбалку",
-        catchFish: "Поймать рыбу", points: "Очки", redeemFood: "Обменять на еду", dailyBonus: "Ежедневный бонус",
-        purchaseBonus: "Бонус за покупку", phoneRequired: "Введите номер телефона", invalidPhone: "Требуется действительный номер телефона!",
-        welcomeBonus: "Приветственный бонус: 500 очков!", paymentTitle: "Информация об оплате",
-        paymentInfo: "Оплату можно произвести через Kaspi или наличными.", alreadyClaimed: "Сегодня вы уже получили бонус!"
-      },
-      en: {
-        home: "Home", menu: "Menu", order: "Order", game: "Game", gallery: "Gallery",
-        payment: "Payment", welcome: "Welcome to Qainjurt Cafe!", menuTitle: "Our Menu",
-        orderTitle: "Place an Order", name: "Your Name", address: "Your Address", phone: "Your Phone Number",
-        items: "Which set or what is needed", paymentMethod: "Payment Method", cash: "Cash", kaspi: "Kaspi",
-        submit: "Submit Order", galleryTitle: "Gallery", orderDetails: "Order Details",
-        orderSent: "Order successfully sent!", play: "Play", pause: "Pause", next: "Next Kui",
-        previous: "Previous Kui", nowPlaying: "Now Playing", gameTitle: "Fishing Game",
-        catchFish: "Catch Fish", points: "Points", redeemFood: "Redeem for Food", dailyBonus: "Daily Bonus",
-        purchaseBonus: "Purchase Bonus", phoneRequired: "Enter your phone number", invalidPhone: "A valid phone number is required!",
-        welcomeBonus: "Welcome Bonus: 500 points!", paymentTitle: "Payment Information",
-        paymentInfo: "Payment can be made via Kaspi or cash.", alreadyClaimed: "You have already claimed today's bonus!"
+        home: "Басты бет", menu: "Мәзір", order: "Тапсырыс беру", gallery: "Галерея", payment: "Төлем",
+        register: "Тіркелу", login: "Кіру", logout: "Шығу", profile: "Профиль",
+        welcome: "Qainjurt Кафесіне қош келдіңіз!", menuTitle: "Біздің мәзір", orderTitle: "Тапсырыс беру",
+        name: "Аты-жөніңіз", address: "Мекен-жайыңыз", phone: "Телефон нөміріңіз", items: "Қандай сет немесе не керек",
+        paymentMethod: "Төлем әдісі", cash: "Қолма-қол", kaspi: "Kaspi", submit: "Тапсырыс жіберу",
+        galleryTitle: "Галерея", orderDetails: "Тапсырыс мәліметтері", orderSent: "Тапсырыс сәтті жіберілді!",
+        play: "Ойнату", pause: "Тоқтату", next: "Келесі күй", previous: "Алдыңғы күй", nowPlaying: "Қазір ойналуда",
+        email: "Электронды пошта", registerNow: "Қазір тіркелу", loginNow: "Қазір кіру",
+        points: "Бонустар", pointsExpired: "Бонустарыңыздың мерзімі бітті!", dailyBonus: "Күнделікті бонус",
+        paymentTitle: "Төлем ақпараты", paymentInfo: "Төлемді Kaspi арқылы немесе қолма-қол жасай аласыз.",
+        alreadyClaimed: "Бүгін бонус алдыңыз!", fullName: "Толық аты-жөніңіз", invalidPhone: "Жарамды телефон нөмірі қажет!",
+        registerError: "Тіркелу кезінде қате шықты!", loginError: "Кіру кезінде қате шықты!", invalidCredentials: "Аты-жөні немесе телефон нөмірі қате!"
       }
     };
 
     const kuiList = [
-      { name: "Сарыарқа", src: "/audio/kui1.mp3" },
-      { name: "Көңіл ашар", src: "/audio/kui2.mp3" },
-      { name: "Балбырауын", src: "/audio/kui3.mp3" }
+      { name: "Сарыарқа", src: "audio/kui1.mp3" },
+      { name: "Көңіл ашар", src: "audio/kui2.mp3" },
+      { name: "Балбырауын", src: "audio/kui3.mp3" }
     ];
 
-    function Sidebar({ lang, setLang, setPage }) {
+    function Sidebar({ lang, setLang, setPage, user, logout }) {
       const t = translations[lang];
       const [isOpen, setIsOpen] = useState(false);
 
@@ -83,31 +45,36 @@
         <div>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="fixed top-4 left-4 z-50 bg-green-600 text-white p-2 rounded"
+            className="fixed top-4 left-4 z-50 bg-green-600 text-white p-2 rounded sm:p-3"
           >
             ☰
           </button>
           <div
             className={`fixed top-0 left-0 h-full bg-green-700 text-white w-64 transform ${
               isOpen ? 'translate-x-0' : '-translate-x-full'
-            } transition-transform duration-300 z-40`}
+            } transition-transform duration-300 z-40 sm:w-80`}
           >
-            <div className="p-4">
-              <h2 className="text-xl font-bold mb-4">Qainjurt Cafe</h2>
-              <button onClick={() => setPage('home')} className="block py-2 hover:underline">{t.home}</button>
-              <button onClick={() => setPage('menu')} className="block py-2 hover:underline">{t.menu}</button>
-              <button onClick={() => setPage('order')} className="block py-2 hover:underline">{t.order}</button>
-              <button onClick={() => setPage('game')} className="block py-2 hover:underline">{t.game}</button>
-              <button onClick={() => setPage('gallery')} className="block py-2 hover:underline">{t.gallery}</button>
-              <button onClick={() => setPage('payment')} className="block py-2 hover:underline">{t.payment}</button>
+            <div className="p-4 sm:p-6">
+              <h2 className="text-xl font-bold mb-4 sm:text-2xl">Qainjurt Cafe</h2>
+              <button onClick={() => setPage('home')} className="block py-2 hover:underline sm:text-lg">{t.home}</button>
+              <button onClick={() => setPage('menu')} className="block py-2 hover:underline sm:text-lg">{t.menu}</button>
+              <button onClick={() => setPage('order')} className="block py-2 hover:underline sm:text-lg">{t.order}</button>
+              <button onClick={() => setPage('gallery')} className="block py-2 hover:underline sm:text-lg">{t.gallery}</button>
+              <button onClick={() => setPage('payment')} className="block py-2 hover:underline sm:text-lg">{t.payment}</button>
+              {user ? (
+                <>
+                  <button onClick={() => setPage('profile')} className="block py-2 hover:underline sm:text-lg">{t.points}: {user.points || 0}</button>
+                  <button onClick={logout} className="block py-2 hover:underline sm:text-lg">{t.logout}</button>
+                </>
+              ) : (
+                <button onClick={() => setPage('register')} className="block py-2 hover:underline sm:text-lg">{t.register}</button>
+              )}
               <select
                 value={lang}
                 onChange={(e) => setLang(e.target.value)}
-                className="mt-4 bg-green-800 p-2 rounded text-white w-full"
+                className="mt-4 bg-green-800 p-2 rounded text-white w-full sm:text-lg"
               >
                 <option value="kk">Қазақша</option>
-                <option value="ru">Русский</option>
-                <option value="en">English</option>
               </select>
             </div>
           </div>
@@ -131,7 +98,7 @@
         const audio = audioRef.current;
         audio.src = kuiList[currentKuiIndex].src;
         if (isPlaying) {
-          audio.play();
+          audio.play().catch(error => console.error('Audio play error:', error));
         }
         return () => {
           audio.pause();
@@ -142,7 +109,7 @@
         if (isPlaying) {
           audioRef.current.pause();
         } else {
-          audioRef.current.play();
+          audioRef.current.play().catch(error => console.error('Audio play error:', error));
         }
         setIsPlaying(!isPlaying);
       };
@@ -158,25 +125,25 @@
       };
 
       return (
-        <div className="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg flex items-center space-x-4">
-          <div className="text-sm">
+        <div className="fixed bottom-4 right-4 bg-white p-4 rounded-lg shadow-lg flex items-center space-x-2 sm:space-x-4 sm:p-6">
+          <div className="text-sm sm:text-base">
             {t.nowPlaying}: {kuiList[currentKuiIndex].name}
           </div>
           <button
             onClick={playPrevious}
-            className="bg-green-600 text-white p-2 rounded hover:bg-green-700"
+            className="bg-green-600 text-white p-2 rounded hover:bg-green-700 sm:p-3"
           >
             {t.previous}
           </button>
           <button
             onClick={togglePlay}
-            className="bg-green-600 text-white p-2 rounded hover:bg-green-700"
+            className="bg-green-600 text-white p-2 rounded hover:bg-green-700 sm:p-3"
           >
             {isPlaying ? t.pause : t.play}
           </button>
           <button
             onClick={playNext}
-            className="bg-green-600 text-white p-2 rounded hover:bg-green-700"
+            className="bg-green-600 text-white p-2 rounded hover:bg-green-700 sm:p-3"
           >
             {t.next}
           </button>
@@ -187,14 +154,14 @@
     function Home({ lang }) {
       const t = translations[lang];
       return (
-        <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center text-center p-4">
+        <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center text-center p-4 sm:p-8">
           <img
             src="/img/cafe-hero.jpg"
             alt="Qainjurt Cafe"
-            className="w-full max-w-3xl h-64 object-cover rounded-lg mb-6"
+            className="w-full max-w-3xl h-64 object-cover rounded-lg mb-6 sm:h-80"
           />
-          <h1 className="text-4xl font-bold text-green-600 mb-4">{t.welcome}</h1>
-          <p className="text-lg text-gray-700">Дәмді тағамдар мен жайлы атмосфераны ұсынамыз!</p>
+          <h1 className="text-3xl font-bold text-green-600 mb-4 sm:text-4xl">{t.welcome}</h1>
+          <p className="text-lg text-gray-700 sm:text-xl">Дәмді тағамдар мен жайлы атмосфераны ұсынамыз!</p>
         </div>
       );
     }
@@ -202,23 +169,23 @@
     function Menu({ lang }) {
       const t = translations[lang];
       const menuItems = [
-        { name: "Бауырсақ", price: "500 KZT", image: "/img/baursak.jpg" },
-        { name: "Қымыз", price: "800 KZT", image: "/img/kymyz.jpg" },
-        { name: "Бешбармақ", price: "2000 KZT", image: "/img/beshbarmak.jpg" }
+        { name: "Бауырсақ", price: "500 KZT", image: "img/baursak.jpg" },
+        { name: "Қымыз", price: "800 KZT", image: "img/kymyz.jpg" },
+        { name: "Бешбармақ", price: "2000 KZT", image: "img/beshbarmak.jpg" }
       ];
       return (
-        <div className="min-h-screen bg-gray-100 p-8">
-          <h1 className="text-3xl font-bold text-green-600 mb-6">{t.menuTitle}</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="min-h-screen bg-gray-100 p-4 sm:p-8">
+          <h1 className="text-2xl font-bold text-green-600 mb-6 sm:text-3xl">{t.menuTitle}</h1>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {menuItems.map((item, index) => (
               <div key={index} className="bg-white p-4 rounded-lg shadow-md">
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-full h-48 object-cover rounded-lg mb-4"
+                  className="w-full h-48 object-cover rounded-lg mb-4 sm:h-56"
                 />
-                <h2 className="text-xl font-semibold">{item.name}</h2>
-                <p className="text-gray-600">{item.price}</p>
+                <h2 className="text-lg font-semibold sm:text-xl">{item.name}</h2>
+                <p className="text-gray-600 sm:text-lg">{item.price}</p>
               </div>
             ))}
           </div>
@@ -226,7 +193,7 @@
       );
     }
 
-    function Order({ lang, addPoints }) {
+    function Order({ lang, user, addPoints }) {
       const t = translations[lang];
       const [name, setName] = useState('');
       const [address, setAddress] = useState('');
@@ -243,8 +210,8 @@
               text: message,
               url: 'https://wa.me/1234567890'
             });
-            if (phone) {
-              addPoints(phone, 1000);
+            if (user) {
+              addPoints(user.phone, 1000); // Тапсырыс бергенде 1000 бонус
             }
             alert(t.orderSent);
           } catch (error) {
@@ -252,8 +219,8 @@
             const encodedMessage = encodeURIComponent(message);
             const url = `https://wa.me/1234567890?text=${encodedMessage}`;
             window.location.href = url;
-            if (phone) {
-              addPoints(phone, 1000);
+            if (user) {
+              addPoints(user.phone, 1000);
             }
             alert(t.orderSent);
           }
@@ -261,49 +228,49 @@
           const encodedMessage = encodeURIComponent(message);
           const url = `https://wa.me/1234567890?text=${encodedMessage}`;
           window.location.href = url;
-          if (phone) {
-            addPoints(phone, 1000);
+          if (user) {
+            addPoints(user.phone, 1000);
           }
           alert(t.orderSent);
         }
       };
 
       return (
-        <div className="min-h-screen bg-gray-100 p-8 flex justify-center">
+        <div className="min-h-screen bg-gray-100 p-4 sm:p-8 flex justify-center">
           <div className="max-w-md w-full">
-            <h1 className="text-3xl font-bold text-green-600 mb-6">{t.orderTitle}</h1>
+            <h1 className="text-2xl font-bold text-green-600 mb-6 sm:text-3xl">{t.orderTitle}</h1>
             <input
               type="text"
               placeholder={t.name}
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full p-2 mb-4 border rounded"
+              className="w-full p-2 mb-4 border rounded sm:p-3 sm:text-lg"
             />
             <input
               type="text"
               placeholder={t.address}
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="w-full p-2 mb-4 border rounded"
+              className="w-full p-2 mb-4 border rounded sm:p-3 sm:text-lg"
             />
             <input
               type="tel"
               placeholder={t.phone}
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
-              className="w-full p-2 mb-4 border rounded"
+              className="w-full p-2 mb-4 border rounded sm:p-3 sm:text-lg"
             />
             <input
               type="text"
               placeholder={t.items}
               value={items}
               onChange={(e) => setItems(e.target.value)}
-              className="w-full p-2 mb-4 border rounded"
+              className="w-full p-2 mb-4 border rounded sm:p-3 sm:text-lg"
             />
             <select
               value={payment}
               onChange={(e) => setPayment(e.target.value)}
-              className="w-full p-2 mb-4 border rounded"
+              className="w-full p-2 mb-4 border rounded sm:p-3 sm:text-lg"
             >
               <option value="cash">{t.cash}</option>
               <option value="kaspi">{t.kaspi}</option>
@@ -312,12 +279,12 @@
               <img
                 src="/img/kaspi-qr.png"
                 alt="Kaspi QR"
-                className="w-32 h-32 mx-auto mb-4"
+                className="w-32 h-32 mx-auto mb-4 sm:w-40 sm:h-40"
               />
             )}
             <button
               onClick={handleSubmit}
-              className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
+              className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700 sm:p-3 sm:text-lg"
             >
               {t.submit}
             </button>
@@ -326,186 +293,24 @@
       );
     }
 
-    function Game({ lang, setPage }) {
-      const t = translations[lang];
-      const [phone, setPhone] = useState('');
-      const [user, setUser] = useState(null);
-
-      const isSameDay = (timestamp) => {
-        if (!timestamp) return false;
-        const lastDate = timestamp.toDate();
-        const today = new Date();
-        return (
-          lastDate.getDate() === today.getDate() &&
-          lastDate.getMonth() === today.getMonth() &&
-          lastDate.getFullYear() === today.getFullYear()
-        );
-      };
-
-      const handlePhoneSubmit = async () => {
-        const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-        if (!phoneRegex.test(phone)) {
-          alert(t.invalidPhone);
-          return;
-        }
-        try {
-          const userDoc = await db.collection('users').doc(phone).get();
-          if (userDoc.exists) {
-            const userData = userDoc.data();
-            setUser({ phone, points: userData.points });
-          } else {
-            await db.collection('users').doc(phone).set({
-              points: 500,
-              lastFishCatch: null,
-              lastDailyBonus: null,
-              lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-            });
-            setUser({ phone, points: 500 });
-            alert(t.welcomeBonus);
-          }
-        } catch (error) {
-          alert('Қате: ' + error.message);
-        }
-      };
-
-      const addPoints = async (phone, points) => {
-        try {
-          const userDoc = await db.collection('users').doc(phone).get();
-          const userData = userDoc.data();
-          const newPoints = (userData.points || 0) + points;
-          await db.collection('users').doc(phone).update({
-            points: newPoints,
-            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          setUser({ phone, points: newPoints });
-        } catch (error) {
-          console.error('Ұпай қосу қатесі:', error);
-        }
-      };
-
-      const redeemPoints = async (points) => {
-        if (user && user.points >= points) {
-          const newPoints = user.points - points;
-          await db.collection('users').doc(user.phone).update({
-            points: newPoints,
-            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-          });
-          setUser({ ...user, points: newPoints });
-          alert(`${t.redeemFood}: ${t.orderSent}`);
-        } else {
-          alert(`30,000 ${t.points} жинаңыз!`);
-        }
-      };
-
-      const catchFish = async () => {
-        if (!user) {
-          alert(t.phoneRequired);
-          return;
-        }
-        const userDoc = await db.collection('users').doc(user.phone).get();
-        const userData = userDoc.data();
-        if (userData.lastFishCatch && isSameDay(userData.lastFishCatch)) {
-          alert(t.alreadyClaimed);
-          return;
-        }
-        addPoints(user.phone, 500);
-        await db.collection('users').doc(user.phone).update({
-          lastFishCatch: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert(`${t.catchFish}: +500 ${t.points}`);
-      };
-
-      const claimDailyBonus = async () => {
-        if (!user) {
-          alert(t.phoneRequired);
-          return;
-        }
-        const userDoc = await db.collection('users').doc(user.phone).get();
-        const userData = userDoc.data();
-        if (userData.lastDailyBonus && isSameDay(userData.lastDailyBonus)) {
-          alert(t.alreadyClaimed);
-          return;
-        }
-        addPoints(user.phone, 100);
-        await db.collection('users').doc(user.phone).update({
-          lastDailyBonus: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        alert(`${t.dailyBonus}: +100 ${t.points}`);
-      };
-
-      const redeemFood = () => {
-        redeemPoints(30000);
-      };
-
-      return (
-        <div className="min-h-screen bg-gray-100 p-8 text-center">
-          <h1 className="text-3xl font-bold text-green-600 mb-6">{t.gameTitle}</h1>
-          {!user ? (
-            <div className="max-w-md mx-auto">
-              <input
-                type="tel"
-                placeholder={t.phone}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full p-2 mb-4 border rounded"
-              />
-              <button
-                onClick={handlePhoneSubmit}
-                className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700"
-              >
-                {t.submit}
-              </button>
-            </div>
-          ) : (
-            <>
-              <p className="text-lg mb-4">{t.points}: {user.points || 0}</p>
-              <button
-                onClick={catchFish}
-                className="bg-green-600 text-white p-2 rounded hover:bg-green-700 mb-4"
-              >
-                {t.catchFish}
-              </button>
-              <button
-                onClick={claimDailyBonus}
-                className="bg-green-600 text-white p-2 rounded hover:bg-green-700 mb-4 mx-2"
-              >
-                {t.dailyBonus}
-              </button>
-              <button
-                onClick={redeemFood}
-                className="bg-green-600 text-white p-2 rounded hover:bg-green-700"
-              >
-                {t.redeemFood}
-              </button>
-            </>
-          )}
-        </div>
-      );
-    }
-
     function Gallery({ lang }) {
       const t = translations[lang];
-      const [photos, setPhotos] = useState([]);
-
-      useEffect(() => {
-        const fetchPhotos = async () => {
-          const photosSnapshot = await db.collection('gallery').get();
-          const photosList = photosSnapshot.docs.map(doc => doc.data().url);
-          setPhotos(photosList);
-        };
-        fetchPhotos();
-      }, []);
+      const photos = [
+        "img/gallery1.jpg",
+        "img/gallery2.jpg",
+        "img/gallery3.jpg"
+      ];
 
       return (
-        <div className="min-h-screen bg-gray-100 p-8">
-          <h1 className="text-3xl font-bold text-green-600 mb-6">{t.galleryTitle}</h1>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="min-h-screen bg-gray-100 p-4 sm:p-8">
+          <h1 className="text-2xl font-bold text-green-600 mb-6 sm:text-3xl">{t.galleryTitle}</h1>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {photos.map((photo, index) => (
               <img
                 key={index}
                 src={photo}
                 alt="Gallery"
-                className="w-full h-48 object-cover rounded"
+                className="w-full h-48 object-cover rounded sm:h-56"
               />
             ))}
           </div>
@@ -516,14 +321,154 @@
     function Payment({ lang }) {
       const t = translations[lang];
       return (
-        <div className="min-h-screen bg-gray-100 p-8 text-center">
-          <h1 className="text-3xl font-bold text-green-600 mb-6">{t.paymentTitle}</h1>
-          <p className="text-lg">{t.paymentInfo}</p>
+        <div className="min-h-screen bg-gray-100 p-4 sm:p-8 text-center">
+          <h1 className="text-2xl font-bold text-green-600 mb-6 sm:text-3xl">{t.paymentTitle}</h1>
+          <p className="text-lg sm:text-xl">{t.paymentInfo}</p>
           <img
             src="/img/kaspi-qr.png"
             alt="Kaspi QR"
-            className="w-32 h-32 mx-auto mt-4"
+            className="w-32 h-32 mx-auto mt-4 sm:w-40 sm:h-40"
           />
+        </div>
+      );
+    }
+
+    function Register({ lang, setUser }) {
+      const t = translations[lang];
+      const [fullName, setFullName] = useState('');
+      const [phone, setPhone] = useState('');
+      const [email, setEmail] = useState('');
+      const [isLogin, setIsLogin] = useState(false);
+
+      const handleRegister = () => {
+        const phoneRegex = /^\+?\d{10,15}$/;
+        const cleanPhone = phone.replace(/\D/g, '');
+        if (!phoneRegex.test(cleanPhone)) {
+          alert(t.invalidPhone);
+          return;
+        }
+        try {
+          const users = JSON.parse(localStorage.getItem('users') || '{}');
+          if (users[cleanPhone]) {
+            alert(t.registerError + ' Телефон нөмірі тіркелген!');
+            return;
+          }
+          users[cleanPhone] = {
+            fullName,
+            email,
+            phone: cleanPhone,
+            points: 0,
+            lastLogin: new Date().toISOString(),
+            lastDailyBonus: null
+          };
+          localStorage.setItem('users', JSON.stringify(users));
+          setUser({ phone: cleanPhone, fullName, email, points: 0 });
+        } catch (error) {
+          alert(t.registerError + ' ' + error.message);
+        }
+      };
+
+      const handleLogin = () => {
+        const cleanPhone = phone.replace(/\D/g, '');
+        try {
+          const users = JSON.parse(localStorage.getItem('users') || '{}');
+          const userData = users[cleanPhone];
+          if (userData && userData.fullName === fullName) {
+            setUser({ 
+              phone: cleanPhone, 
+              fullName: userData.fullName, 
+              email: userData.email, 
+              points: userData.points,
+              lastLogin: userData.lastLogin,
+              lastDailyBonus: userData.lastDailyBonus
+            });
+          } else {
+            alert(t.invalidCredentials);
+          }
+        } catch (error) {
+          alert(t.loginError + ' ' + error.message);
+        }
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-100 p-4 sm:p-8 flex justify-center">
+          <div className="max-w-md w-full">
+            <h1 className="text-2xl font-bold text-green-600 mb-6 sm:text-3xl">{isLogin ? t.login : t.register}</h1>
+            <input
+              type="text"
+              placeholder={t.fullName}
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="w-full p-2 mb-4 border rounded sm:p-3 sm:text-lg"
+            />
+            <input
+              type="tel"
+              placeholder={t.phone}
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full p-2 mb-4 border rounded sm:p-3 sm:text-lg"
+            />
+            {!isLogin && (
+              <input
+                type="email"
+                placeholder={t.email}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full p-2 mb-4 border rounded sm:p-3 sm:text-lg"
+              />
+            )}
+            <button
+              onClick={isLogin ? handleLogin : handleRegister}
+              className="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700 mb-4 sm:p-3 sm:text-lg"
+            >
+              {isLogin ? t.loginNow : t.registerNow}
+            </button>
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-green-600 hover:underline sm:text-lg"
+            >
+              {isLogin ? t.registerNow : t.loginNow}
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    function Profile({ lang, user, addPoints }) {
+      const t = translations[lang];
+
+      const isSameDay = (lastBonusDate) => {
+        if (!lastBonusDate) return false;
+        const lastDate = new Date(lastBonusDate);
+        const today = new Date();
+        return (
+          lastDate.getDate() === today.getDate() &&
+          lastDate.getMonth() === today.getMonth() &&
+          lastDate.getFullYear() === today.getFullYear()
+        );
+      };
+
+      const claimDailyBonus = () => {
+        if (isSameDay(user.lastDailyBonus)) {
+          alert(t.alreadyClaimed);
+          return;
+        }
+        addPoints(user.phone, 1000);
+        alert(`${t.dailyBonus}: +1000 ${t.points}`);
+      };
+
+      return (
+        <div className="min-h-screen bg-gray-100 p-4 sm:p-8 text-center">
+          <h1 className="text-2xl font-bold text-green-600 mb-6 sm:text-3xl">{t.fullName}: {user.fullName}</h1>
+          <p className="text-lg sm:text-xl">{t.email}: {user.email}</p>
+          <p className="text-lg sm:text-xl">{t.phone}: {user.phone}</p>
+          <p className="text-lg sm:text-xl">{t.points}: {user.points || 0}</p>
+          <button
+            onClick={claimDailyBonus}
+            className="mt-4 bg-green-600 text-white p-2 rounded hover:bg-green-700 sm:p-3 sm:text-lg"
+          >
+            {t.dailyBonus}
+          </button>
         </div>
       );
     }
@@ -531,30 +476,75 @@
     function App() {
       const [lang, setLang] = useState('kk');
       const [page, setPage] = useState('home');
+      const [user, setUser] = useState(null);
 
-      const addPoints = async (phone, points) => {
-        try {
-          const userDoc = await db.collection('users').doc(phone).get();
-          const userData = userDoc.data();
-          const newPoints = (userData.points || 0) + points;
-          await db.collection('users').doc(phone).update({
-            points: newPoints,
-            lastLogin: firebase.firestore.FieldValue.serverTimestamp()
-          });
-        } catch (error) {
-          console.error('Ұпай қосу қатесі:', error);
+      useEffect(() => {
+        const storedPhone = localStorage.getItem('userPhone');
+        if (storedPhone) {
+          try {
+            const users = JSON.parse(localStorage.getItem('users') || '{}');
+            const userData = users[storedPhone];
+            if (userData) {
+              const lastLogin = new Date(userData.lastLogin);
+              const now = new Date();
+              const hoursSinceLastLogin = (now - lastLogin) / (1000 * 60 * 60);
+
+              if (hoursSinceLastLogin > 48) {
+                userData.points = 0;
+                userData.lastLogin = now.toISOString();
+                users[storedPhone] = userData;
+                localStorage.setItem('users', JSON.stringify(users));
+                setUser(userData);
+                alert(translations[lang].pointsExpired);
+              } else {
+                setUser(userData);
+              }
+            }
+          } catch (error) {
+            console.error('Пайдаланушыны тексеру қатесі:', error);
+          }
         }
+      }, [lang]);
+
+      const addPoints = (phone, points) => {
+        try {
+          const users = JSON.parse(localStorage.getItem('users') || '{}');
+          const userData = users[phone];
+          if (userData) {
+            const newPoints = (userData.points || 0) + points;
+            userData.points = newPoints;
+            userData.lastLogin = new Date().toISOString();
+            userData.lastDailyBonus = new Date().toISOString();
+            users[phone] = userData;
+            localStorage.setItem('users', JSON.stringify(users));
+            setUser({ ...userData, points: newPoints });
+          }
+        } catch (error) {
+          console.error('Бонус қосу қатесі:', error);
+        }
+      };
+
+      const logout = () => {
+        localStorage.removeItem('userPhone');
+        setUser(null);
+        setPage('home');
+      };
+
+      const setUserWithStorage = (userData) => {
+        localStorage.setItem('userPhone', userData.phone);
+        setUser(userData);
       };
 
       return (
         <div>
-          <Sidebar lang={lang} setLang={setLang} setPage={setPage} />
+          <Sidebar lang={lang} setLang={setLang} setPage={setPage} user={user} logout={logout} />
           {page === 'home' && <Home lang={lang} />}
           {page === 'menu' && <Menu lang={lang} />}
-          {page === 'order' && <Order lang={lang} addPoints={addPoints} />}
-          {page === 'game' && <Game lang={lang} setPage={setPage} />}
+          {page === 'order' && <Order lang={lang} user={user} addPoints={addPoints} />}
           {page === 'gallery' && <Gallery lang={lang} />}
           {page === 'payment' && <Payment lang={lang} />}
+          {page === 'register' && <Register lang={lang} setUser={setUserWithStorage} />}
+          {page === 'profile' && user && <Profile lang={lang} user={user} addPoints={addPoints} />}
           <AudioPlayer lang={lang} />
         </div>
       );
